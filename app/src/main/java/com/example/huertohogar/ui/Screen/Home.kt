@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun HomeScreen() {
-    var selectedItem by remember { mutableStateOf("Home") }
+    var selectedItem by remember { mutableStateOf("Inicio") }
 
     val menuItems = listOf("Inicio", "Productos", "Nosotros", "Blogs")
 
@@ -25,12 +25,39 @@ fun HomeScreen() {
                     .background(Color.White)
                     .padding(16.dp)
             ) {
-                Text(
-                    "HuertoHogar",
-                    color = Color.Black,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "HuertoHogar",
+                        color = Color.Black,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Row {
+                        TextButton(
+                            onClick = {  }
+                        ) {
+                            Text(
+                                text = "Iniciar Sesion",
+                                color = Color.Black,
+                                fontSize = 12.sp
+                            )
+                        }
+                        TextButton(
+                            onClick = {  }
+                        ) {
+                            Text(
+                                text = "Registrarse",
+                                color = Color.Black,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -56,7 +83,7 @@ fun HomeScreen() {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White) // Blanco para footer
+                    .background(Color.White)
                     .padding(16.dp)
             ) {
                 Text(

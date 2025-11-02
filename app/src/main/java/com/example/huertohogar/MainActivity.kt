@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.huertohogar.ui.Screen.HomeScreen
 import com.example.huertohogar.ui.Screen.Login
+import com.example.huertohogar.ui.Screen.Registro
 import com.example.huertohogar.ui.theme.HuertoHogarTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,6 +45,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     HuertoHogarTheme {
-        HomeScreen()
+        Registro()
     }
 }
