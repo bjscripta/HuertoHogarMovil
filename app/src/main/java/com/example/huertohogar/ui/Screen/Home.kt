@@ -33,7 +33,6 @@ fun Home() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // ✅ IMAGEN DEL LOGO en lugar del texto
                     Image(
                         painter = painterResource(id = R.drawable.logo_huertoghogar),
                         contentDescription = "Logo HuertoHogar",
