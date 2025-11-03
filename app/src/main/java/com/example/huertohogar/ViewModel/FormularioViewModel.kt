@@ -13,8 +13,8 @@ class FormularioViewModel(private val usuarioDAO: UsuarioDAO): ViewModel() {
 
     val usuarios = _usuarios.asStateFlow()
 
-    fun agregarUsuario(nombre: String, contrasena: String){
-        val nuevoUsuario = Usuario(nombre = nombre, contrasena = contrasena)
+    fun agregarUsuario(correo: String, contrasena: String){
+        val nuevoUsuario = Usuario(correo = correo  , contrasena = contrasena)
 
         viewModelScope.launch {
             usuarioDAO.insertar(nuevoUsuario)
@@ -22,9 +22,15 @@ class FormularioViewModel(private val usuarioDAO: UsuarioDAO): ViewModel() {
         }
     }
 
-    fun cargarUsuario(){
+    fun mostrarUsuarios(){
         viewModelScope.launch {
-            _usuarios.value = usuarioDAO.obtenerUsuarios()
+            val listaUsuarios = usuarioDAO.obtenerUsuarios()
+            _usuarios.value = listaUsuarios
+            println("** Lista de usuarios **")
+            println("Total: ${listaUsuarios.size}")
+            listaUsuarios.forEach { usuario ->
+                println("Usuario: ${usuario.correo}")
+            }
         }
     }
 }

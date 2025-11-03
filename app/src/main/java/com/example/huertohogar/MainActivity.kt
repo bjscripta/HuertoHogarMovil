@@ -9,9 +9,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.huertohogar.ui.Screen.HomeScreen
+import androidx.room.Room
+import com.example.conedb.ViewModel.FormularioViewModel
+import com.example.conedb.data.UsuarioDataBase
+import com.example.huertohogar.ui.Screen.Catalogo
+import com.example.huertohogar.ui.Screen.Home
 import com.example.huertohogar.ui.Screen.Login
 import com.example.huertohogar.ui.Screen.PerfilUsuario
 import com.example.huertohogar.ui.Screen.Registro
@@ -46,6 +52,23 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     HuertoHogarTheme {
-        PerfilUsuario()
+        Home()
     }
+}
+
+@Composable
+fun FormularioApp(){
+    val context = LocalContext.current
+
+    val database = remember {
+        Room.databaseBuilder(
+            context,
+            UsuarioDataBase::class.java,
+            "usuario.db"
+        ).build()
+    }
+    val viewModel = remember {
+        FormularioViewModel(database.usuarioDAO())
+    }
+    Registro(viewModel = viewModel)
 }

@@ -1,8 +1,5 @@
 package com.example.huertohogar.ui.Screen
 
-import android.inputmethodservice.Keyboard
-import android.widget.Button
-import android.widget.Space
 import androidx.compose.runtime.Composable
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -17,18 +14,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
-import androidx.room.util.TableInfo
 
 
 @Composable
 fun Login(){
     val context = LocalContext.current
 
-    //variable para almacenar el dato de usuario
     var user by remember { mutableStateOf("") }
-
-    //variable para almacenar la password
     var pass by remember { mutableStateOf("") }
 
     Column(

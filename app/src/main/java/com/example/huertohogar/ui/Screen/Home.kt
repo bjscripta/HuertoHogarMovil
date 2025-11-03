@@ -1,5 +1,6 @@
 package com.example.huertohogar.ui.Screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -7,12 +8,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.huertohogar.R
 
 @Composable
-fun HomeScreen() {
+fun Home() {
     var selectedItem by remember { mutableStateOf("Inicio") }
 
     val menuItems = listOf("Inicio", "Productos", "Nosotros", "Blogs")
@@ -30,11 +33,13 @@ fun HomeScreen() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        "HuertoHogar",
-                        color = Color.Black,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                    // ✅ IMAGEN DEL LOGO en lugar del texto
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_huertoghogar),
+                        contentDescription = "Logo HuertoHogar",
+                        modifier = Modifier
+                            .height(120.dp)
+                            .width(120.dp)
                     )
 
                     Row {
