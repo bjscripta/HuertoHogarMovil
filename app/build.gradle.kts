@@ -1,4 +1,4 @@
-plugins {
+    plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
@@ -42,6 +42,9 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        animationsDisabled = true
+    }
 }
 
 dependencies {
@@ -53,6 +56,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -60,6 +64,13 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.0")
+
+    // Para usar Navigation en pruebas
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.5")
+
 
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
@@ -71,6 +82,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
 
 
 }
