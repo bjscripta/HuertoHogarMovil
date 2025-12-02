@@ -2,131 +2,192 @@ package com.example.huertohogar.ui.Screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.huertohogar.R
-import com.example.huertohogar.data.model.Producto
+import com.example.huertohogar.data.repository.CarritoRepository
+import com.example.huertohogar.ui.components.ProductoCard
+import com.example.huertohogar.viewmodel.CarritoViewModel
+import com.example.huertohogar.viewmodel.CatalogoViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun Catalogo() {
-    val productos = remember { getProductosEjemplo() }
+fun Catalogo(navController: NavController) {
+    val catalogoViewModel: CatalogoViewModel = viewModel()
+    val carritoViewModel: CarritoViewModel = viewModel()
+    val productos by catalogoViewModel.productos.collectAsState()
+    val mostrarDialog by catalogoViewModel.mostrarDialog.collectAsState()
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        item {
+    // Contador del carrito
+    var contadorCarrito by remember { mutableStateOf(0) }
+
+    // Observar cambios en el carrito
+    LaunchedEffect(Unit) {
+        CarritoRepository.carritoItems.collectLatest { items ->
+            contadorCarrito = items.sumOf { it.cantidad }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+            // BARRA SUPERIOR
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // LOGO - Click para ir a Home
+                Image(
+                    painter = painterResource(id = R.drawable.logo_huertoghogar),
+                    contentDescription = "Logo HuertoHogar",
+                    modifier = Modifier
+                        .height(60.dp)
+                        .width(60.dp)
+                        .clickable {
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                )
+
+                // BOTÓN CARRITO con contador
+                Box {
+                    IconButton(
+                        onClick = {
+                            navController.navigate("carrito")
+                        },
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF81154C))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Carrito",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    // BADGE con contador
+                    if (contadorCarrito > 0) {
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .background(Color.Red)
+                                .align(Alignment.TopEnd),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (contadorCarrito > 9) "9+" else contadorCarrito.toString(),
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+
+            Divider(color = Color.LightGray, thickness = 1.dp)
+
+            // TÍTULO
             Text(
-                "Catalogo de productos",
+                text = "Catálogo de Productos",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF2E7D32),
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
-        }
-        items(productos) { producto ->
-            ProductoCard(producto = producto)
-        }
-    }
-}
 
-@Composable
-fun ProductoCard(producto: Producto) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(140.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = getImagenResource(producto.imagen)),
-                contentDescription = producto.nombre,
+            // LISTA DE PRODUCTOS
+            LazyColumn(
                 modifier = Modifier
-                    .size(100.dp)
-                    .padding(end = 16.dp),
-                contentScale = ContentScale.Crop
-            )
-
-            Column(
-                modifier = Modifier.weight(1f)
+                    .fillMaxSize()
+                    .background(Color.White),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Text(
-                    producto.nombre,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    producto.descripcion,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
-                    maxLines = 2
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "$${producto.precio.toInt()}",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2E7D32)
-                )
-            }
-
-            Button(
-                onClick = {  },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2E7D32)
-                )
-            ) {
-                Text("Agregar")
+                items(productos) { producto ->
+                    ProductoCard(producto = producto)
+                }
             }
         }
-    }
-}
 
-fun getProductosEjemplo(): List<Producto> {
-    return listOf(
-        Producto(1, "Espinacas Frescas", 2500.0, "espinacas_frescas", "Espinacas orgánicas recién cosechadas"),
-        Producto(2, "Leche Entera", 1800.0, "leche_entera", "Leche entera de vacas criadas en pradera"),
-        Producto(3, "Manzana Fuji", 1200.0, "manzana_fuji", "Manzanas Fuji dulces y crujientes"),
-        Producto(4, "Miel Orgánica", 3800.0, "miel_organica", "Miel pura de abejas sin procesar"),
-        Producto(5, "Naranjas Valencia", 2200.0, "naranjas_valencia", "Naranjas jugosas para jugo"),
-        Producto(6, "Pimientos Tricolores", 2950.0, "pimientos_tricolores", "Mix de pimientos rojo, amarillo y verde"),
-        Producto(7, "Plátanos Cavendish", 1500.0, "platanos_cavendish", "Plátanos maduros y dulces"),
-        Producto(8, "Quinua Orgánica", 3200.0, "quinoa_organica", "Quinua orgánica de grano entero"),
-        Producto(9, "Zanahorias Orgánicas", 1100.0, "zanahorias_organicas", "Zanahorias dulces cultivadas sin pesticidas")
-    )
-}
+        // BOTÓN FLOTANTE PARA VOLVER A HOME
+        FloatingActionButton(
+            onClick = {
+                navController.navigate("home") {
+                    popUpTo("home") { inclusive = true }
+                    launchSingleTop = true
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            containerColor = Color(0xFF81154C),
+            contentColor = Color.White
+        ) {
+            Icon(
+                imageVector = Icons.Default.Home,
+                contentDescription = "Home"
+            )
+        }
 
-fun getImagenResource(nombre: String): Int {
-    return when (nombre) {
-        "espinacas_frescas" -> R.drawable.espinacas_frescas
-        "leche_entera" -> R.drawable.leche_entera
-        "manzana_fuji" -> R.drawable.manzana_fuji
-        "miel_organica" -> R.drawable.miel_organica
-        "naranjas_valencia" -> R.drawable.naranjas_valencia
-        "pimientos_tricolores" -> R.drawable.pimientos_tricolores
-        "platanos_cavendish" -> R.drawable.platanos_cavendish
-        "quinoa_organica" -> R.drawable.quinoa_organica
-        "zanahorias_organicas" -> R.drawable.zanahorias_organicas
-        else -> R.drawable.ic_launcher_foreground
+        // DIALOG PARA SELECCIONAR CANTIDAD
+        if (mostrarDialog) {
+            DialogCantidad(
+                viewModel = catalogoViewModel,
+                onDismiss = {
+                    catalogoViewModel.cerrarDialog()
+                },
+                onConfirm = { cantidad ->
+                    val producto = catalogoViewModel.productoSeleccionado.value
+                    producto?.let {
+                        // Actualizar stock en el repositorio
+                        if (com.example.huertohogar.data.repository.ProductoRepository.actualizarStock(it.id, cantidad)) {
+                            // Agregar al carrito
+                            CarritoRepository.agregarAlCarrito(
+                                productoId = it.id,
+                                nombre = it.nombre,
+                                precio = it.precio,
+                                imagen = it.imagen,
+                                cantidad = cantidad
+                            )
+                            // Actualizar productos en la vista
+                            catalogoViewModel.actualizarProductos()
+                        }
+                    }
+                    catalogoViewModel.cerrarDialog()
+                }
+            )
+        }
     }
 }
