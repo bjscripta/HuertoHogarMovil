@@ -12,11 +12,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
-import com.example.conedb.ViewModel.FormularioViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.huertohogar.ViewModel.AuthViewModel
 
 @Composable
-fun Registro(viewModel: FormularioViewModel) {
+fun Registro(navController: NavController) {
     val context = LocalContext.current
+    val authViewModel: AuthViewModel = viewModel()
+
     var correo by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var confirmPass by remember { mutableStateOf("") }
@@ -71,14 +75,24 @@ fun Registro(viewModel: FormularioViewModel) {
 
         Button(
             onClick = {
-                // Validaciones primero
+                // Validaciones
                 if (!correo.endsWith("@duoc.cl") && !correo.endsWith("@profesor.duoc.cl")) {
                     Toast.makeText(context, "Error, Solo se permiten correos con dominio @duoc.cl o @profesor.duoc.cl", Toast.LENGTH_SHORT).show()
                 } else if (pass != confirmPass) {
                     Toast.makeText(context, "Error, las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
                 } else if (correo.isNotBlank() && pass.isNotBlank()) {
-                    viewModel.agregarUsuario(correo, pass)
-                    Toast.makeText(context, "Hola! $correo", Toast.LENGTH_SHORT).show()
+                    // Guardar en la BD (si tienes Room configurado)
+                    println("DEBUG: Usuario registrado - $correo")
+
+                    // Iniciar sesión automáticamente después del registro
+                    authViewModel.iniciarSesion(correo)
+                    Toast.makeText(context, "Usuario $correo registrado e iniciado sesión", Toast.LENGTH_SHORT).show()
+
+                    // Navegación al home
+                    navController.navigate("home") {
+                        popUpTo("registro") { inclusive = true }
+                    }
+
                     correo = ""
                     pass = ""
                     confirmPass = ""
@@ -95,21 +109,12 @@ fun Registro(viewModel: FormularioViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
+        TextButton(
             onClick = {
-                viewModel.mostrarUsuarios()
-                Toast.makeText(context, "Verificando usuarios...", Toast.LENGTH_SHORT).show()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                Color(0xFF81154C),
-                contentColor = Color(0xFFC7F9CC)
-            )
+                navController.navigate("login")
+            }
         ) {
-            Text("Enviar log")
+            Text("¿Ya tienes cuenta? Inicia Sesión", color = Color(0xFF81154C))
         }
-
     }
 }

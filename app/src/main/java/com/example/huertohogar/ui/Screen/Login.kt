@@ -14,11 +14,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.huertohogar.ViewModel.AuthViewModel
 
 @Composable
-fun Login(){
+fun Login(navController: NavController) {
     val context = LocalContext.current
+    val authViewModel: AuthViewModel = viewModel()
 
     var user by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
@@ -31,7 +34,7 @@ fun Login(){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Iniciar Sesion",
+            "Iniciar Sesión",
             style = MaterialTheme.typography.headlineSmall,
             color = Color(0xFF53AF4C)
         )
@@ -41,9 +44,9 @@ fun Login(){
         OutlinedTextField(
             value = user,
             onValueChange = { user = it },
-            label = { Text("Usuario", color = Color(0x88B97C31)) },
+            label = { Text("Correo", color = Color(0x88B97C31)) },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -63,15 +66,36 @@ fun Login(){
 
         Button(
             onClick = {
-                Toast.makeText(context, "Bienvenido $user", Toast.LENGTH_SHORT)
-                    .show()
+                if (user.isNotBlank() && pass.isNotBlank()) {
+                    // Guardar la sesión
+                    authViewModel.iniciarSesion(user)
+                    Toast.makeText(context, "Bienvenido $user", Toast.LENGTH_SHORT).show()
+
+                    // Navegar al home y limpiar el stack
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                } else {
+                    Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+                }
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(Color(0xFF81154C),
-                contentColor = Color(0xFFC7F9CC))
+            colors = ButtonDefaults.buttonColors(
+                Color(0xFF81154C),
+                contentColor = Color(0xFFC7F9CC)
+            )
         ) {
-            Text("Enviar")
+            Text("Iniciar Sesión")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(
+            onClick = {
+                navController.navigate("registro")
+            }
+        ) {
+            Text("¿No tienes cuenta? Regístrate", color = Color(0xFF81154C))
         }
     }
-
 }
