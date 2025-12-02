@@ -12,9 +12,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
 
 @Composable
-fun PerfilUsuario() {
+fun PerfilUsuario(navController: NavController) {
     val context = LocalContext.current
 
     var rut by remember { mutableStateOf("21863953-K") }

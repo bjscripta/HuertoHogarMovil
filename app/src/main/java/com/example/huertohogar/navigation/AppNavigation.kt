@@ -21,5 +21,7 @@ fun AppNavigation() {
         composable("registro") { Registro(navController = navController) }
         composable("home") { Home(navController = navController) }
         composable("catalogo") { Catalogo(navController = navController) }
+        composable("carrito") { Carrito(navController = navController) }
+        composable("perfil") { PerfilUsuario(navController = navController) }
     }
 }
