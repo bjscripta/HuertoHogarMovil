@@ -4,10 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Person
@@ -27,14 +27,38 @@ import androidx.navigation.NavController
 import com.example.huertohogar.R
 import com.example.huertohogar.ViewModel.AuthViewModel
 
+data class Noticia(
+    val id: Int,
+    val titulo: String,
+    val subtitulo: String,
+    val contenido: String,
+    val botonTexto: String
+)
+
 @Composable
-fun Home(navController: NavController) {
+fun Blog(navController: NavController) {
     val authViewModel: AuthViewModel = viewModel()
     val usuarioActual by authViewModel.usuarioActual.collectAsState()
     val mostrarMenu by authViewModel.mostrarMenuUsuario.collectAsState()
 
-    var selectedItem by remember { mutableStateOf("Inicio") }
+    var selectedItem by remember { mutableStateOf("Blogs") }
     val menuItems = listOf("Inicio", "Productos", "Nosotros", "Blogs")
+    val noticias = listOf(
+        Noticia(
+            id = 1,
+            titulo = "CASO CURIOSO #1: EL TOMATE QUE CRECIÓ EN MARTE",
+            subtitulo = "Agricultura extraterrestre y sus beneficios para la Tierra",
+            contenido = "En un experimento revolucionario de la NASA, científicos lograron cultivar tomates en un suelo simulado de Marte. Las plantas mostraron una adaptación sorprendente al ambiente marciano, desarrollando raíces más profundas y un sistema de conservación de agua único. Este descubrimiento no solo acerca la posibilidad de agricultura extraterrestre, sino que también ofrece insights valiosos para el cultivo en condiciones áridas en la Tierra.\n\nLos tomates marcianos mostraron un contenido de antioxidantes un 30% mayor que sus contrapartes terrestres, lo que podría revolucionar la agricultura sostenible en zonas desérticas.",
+            botonTexto = "VER CASO"
+        ),
+        Noticia(
+            id = 2,
+            titulo = "CASO CURIOSO #2: LA JARDINERA DE 90 AÑOS CON EL HUERTO URBANO MÁS PRODUCTIVO",
+            subtitulo = "Técnicas tradicionales y productividad en espacios reducidos",
+            contenido = "Doña Carmen, una mujer de 90 años de Sevilla, España, ha desarrollado en su pequeño balcón de 10m² el huerto urbano más productivo documentado. Utilizando técnicas verticales y de asociación de cultivos que ella misma ha perfeccionado a lo largo de 40 años, cosecha anualmente más de 150kg de hortalizas, suficientes para abastecerse y regalar a sus vecinos.\n\nSu secreto: una mezcla especial de compost que incluye cáscaras de plátano, posos de café y cenizas de madera, junto con un sistema de riego por goteo artesanal que mantiene la humedad perfecta para cada planta.",
+            botonTexto = "VER CASO"
+        )
+    )
 
     Scaffold(
         topBar = {
@@ -58,7 +82,6 @@ fun Home(navController: NavController) {
                     )
 
                     if (usuarioActual.estaAutenticado) {
-                        // MOSTRAR USUARIO AUTENTICADO (icono + nombre + menú)
                         Box {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -84,8 +107,6 @@ fun Home(navController: NavController) {
                                 }
 
                                 Spacer(modifier = Modifier.width(8.dp))
-
-                                // Nombre del usuario
                                 Text(
                                     text = usuarioActual.nombre,
                                     color = Color.Black,
@@ -95,40 +116,11 @@ fun Home(navController: NavController) {
 
                                 Spacer(modifier = Modifier.width(4.dp))
 
-                                // Flecha del menú desplegable
                                 Icon(
                                     imageVector = Icons.Default.ArrowDropDown,
                                     contentDescription = "Menú usuario",
                                     tint = Color.Black
                                 )
-                            }
-
-                            // MENÚ DESPLEGABLE
-                            if (mostrarMenu) {
-                                DropdownMenu(
-                                    expanded = mostrarMenu,
-                                    onDismissRequest = { authViewModel.ocultarMenuUsuario() },
-                                    modifier = Modifier.background(Color.White)
-                                ) {
-                                    DropdownMenuItem(
-                                        text = { Text("Ver Perfil") },
-                                        onClick = {
-                                            authViewModel.ocultarMenuUsuario()
-                                            navController.navigate("perfil")
-                                        }
-                                    )
-                                    Divider()
-                                    DropdownMenuItem(
-                                        text = { Text("Cerrar Sesión", color = Color.Red) },
-                                        onClick = {
-                                            authViewModel.cerrarSesion()
-                                            authViewModel.ocultarMenuUsuario()
-                                            navController.navigate("login") {
-                                                popUpTo("home") { inclusive = true }
-                                            }
-                                        }
-                                    )
-                                }
                             }
                         }
                     } else {
@@ -170,9 +162,10 @@ fun Home(navController: NavController) {
                             onClick = {
                                 selectedItem = item
                                 when (item) {
+                                    "Inicio" -> navController.navigate("home")
                                     "Productos" -> navController.navigate("catalogo")
                                     "Nosotros" -> navController.navigate("nosotros")
-                                    "Blogs" -> navController.navigate("blog")
+                                    "Blogs" -> { }
                                 }
                             }
                         ) {
@@ -217,128 +210,99 @@ fun Home(navController: NavController) {
                 )
             }
         },
-        containerColor = Color.White
+        containerColor = Color.LightGray
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.White)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(Color.LightGray),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.huerto),
-                contentDescription = "Huerto Hogar",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp),
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            item {
                 Text(
-                    text = "# Sobre Nosotros",
-                    style = MaterialTheme.typography.headlineLarge,
+                    "Noticias y Casos Curiosos",
+                    style = MaterialTheme.typography.headlineMedium,
                     color = Color(0xFF81154C),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = "HuertoHogar es una tienda online dedicada a llevar la frescura y calidad de los productos del campo directamente a la puerta de nuestros clientes en Chile. Con más de 6 años de experiencia, operamos en más de 9 puntos a lo largo del país, incluyendo ciudades clave como Santiago, Puerto Montt, Villarica, Nacimiento, Viña del Mar, Valparaíso, y Concepción. Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.",
+                    "Noticias y casos curiosos en HuertoHogar",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.Black,
-                    lineHeight = 24.sp,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Justify
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
-                Divider(
-                    color = Color.LightGray,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(vertical = 8.dp)
+            }
+
+            items(noticias) { noticia ->
+                TarjetaNoticia(noticia = noticia, onClick = {
+                    println("Caso clickeado: ${noticia.titulo}")
+                })
+            }
+        }
+    }
+}
+
+@Composable
+fun TarjetaNoticia(noticia: Noticia, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = noticia.titulo,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color(0xFF81154C),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = noticia.subtitulo,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+            Divider(
+                color = Color.LightGray,
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = noticia.contenido,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 16.dp),
+                lineHeight = 22.sp
+            )
+            Button(
+                onClick = onClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF81154C)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = noticia.botonTexto,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFF8F8F8)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Nuestras Ubicaciones",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = Color(0xFF81154C),
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 12.dp),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-
-                        Text(
-                            text = "Estamos presentes en:",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 12.dp),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(6.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            listOf(
-                                "Santiago",
-                                "Puerto Montt",
-                                "Villarica",
-                                "Nacimiento",
-                                "Viña del Mar",
-                                "Valparaíso",
-                                "Concepción"
-                            ).forEach { ciudad ->
-                                Text(
-                                    text = "• $ciudad",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Black
-                                )
-                            }
-                        }
-                    }
-                }
-                Button(
-                    onClick = {
-                        navController.navigate("catalogo")
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF81154C)
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 8.dp,
-                        pressedElevation = 4.dp
-                    )
-                ) {
-                    Text(
-                        text = "Ver Productos",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
             }
         }
     }

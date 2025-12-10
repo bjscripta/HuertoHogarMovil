@@ -28,12 +28,12 @@ import com.example.huertohogar.R
 import com.example.huertohogar.ViewModel.AuthViewModel
 
 @Composable
-fun Home(navController: NavController) {
+fun Nosotros(navController: NavController) {
     val authViewModel: AuthViewModel = viewModel()
     val usuarioActual by authViewModel.usuarioActual.collectAsState()
     val mostrarMenu by authViewModel.mostrarMenuUsuario.collectAsState()
 
-    var selectedItem by remember { mutableStateOf("Inicio") }
+    var selectedItem by remember { mutableStateOf("Nosotros") }
     val menuItems = listOf("Inicio", "Productos", "Nosotros", "Blogs")
 
     Scaffold(
@@ -56,9 +56,7 @@ fun Home(navController: NavController) {
                             .height(120.dp)
                             .width(120.dp)
                     )
-
                     if (usuarioActual.estaAutenticado) {
-                        // MOSTRAR USUARIO AUTENTICADO (icono + nombre + menú)
                         Box {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -66,7 +64,6 @@ fun Home(navController: NavController) {
                                     .clickable { authViewModel.toggleMenuUsuario() }
                                     .padding(8.dp)
                             ) {
-                                // Icono de usuario
                                 Box(
                                     modifier = Modifier
                                         .size(36.dp)
@@ -82,10 +79,7 @@ fun Home(navController: NavController) {
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
-
                                 Spacer(modifier = Modifier.width(8.dp))
-
-                                // Nombre del usuario
                                 Text(
                                     text = usuarioActual.nombre,
                                     color = Color.Black,
@@ -94,16 +88,12 @@ fun Home(navController: NavController) {
                                 )
 
                                 Spacer(modifier = Modifier.width(4.dp))
-
-                                // Flecha del menú desplegable
                                 Icon(
                                     imageVector = Icons.Default.ArrowDropDown,
                                     contentDescription = "Menú usuario",
                                     tint = Color.Black
                                 )
                             }
-
-                            // MENÚ DESPLEGABLE
                             if (mostrarMenu) {
                                 DropdownMenu(
                                     expanded = mostrarMenu,
@@ -114,7 +104,7 @@ fun Home(navController: NavController) {
                                         text = { Text("Ver Perfil") },
                                         onClick = {
                                             authViewModel.ocultarMenuUsuario()
-                                            navController.navigate("perfil")
+                                            println("Navegar a perfil")
                                         }
                                     )
                                     Divider()
@@ -170,9 +160,10 @@ fun Home(navController: NavController) {
                             onClick = {
                                 selectedItem = item
                                 when (item) {
+                                    "Inicio" -> navController.navigate("home")
                                     "Productos" -> navController.navigate("catalogo")
-                                    "Nosotros" -> navController.navigate("nosotros")
                                     "Blogs" -> navController.navigate("blog")
+                                    "Nosotros" -> { } // Ya estamos aquí
                                 }
                             }
                         ) {
@@ -217,129 +208,81 @@ fun Home(navController: NavController) {
                 )
             }
         },
-        containerColor = Color.White
+        containerColor = Color.LightGray
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.White)
-                .verticalScroll(rememberScrollState()),
+                .background(Color.LightGray)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.huerto),
-                contentDescription = "Huerto Hogar",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp),
-                contentScale = ContentScale.Crop
+            Text(
+                text = "Sobre Nosotros",
+                style = MaterialTheme.typography.headlineLarge,
+                color = Color(0xFF81154C),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 32.dp)
             )
-            Column(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(horizontal = 8.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
-                Text(
-                    text = "# Sobre Nosotros",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Color(0xFF81154C),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
-                Text(
-                    text = "HuertoHogar es una tienda online dedicada a llevar la frescura y calidad de los productos del campo directamente a la puerta de nuestros clientes en Chile. Con más de 6 años de experiencia, operamos en más de 9 puntos a lo largo del país, incluyendo ciudades clave como Santiago, Puerto Montt, Villarica, Nacimiento, Viña del Mar, Valparaíso, y Concepción. Nuestra misión es conectar a las familias chilenas con el campo, promoviendo un estilo de vida saludable y sostenible.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Black,
-                    lineHeight = 24.sp,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Justify
-                )
-                Divider(
-                    color = Color.LightGray,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFF8F8F8)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Nuestras Ubicaciones",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = Color(0xFF81154C),
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 12.dp),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-
-                        Text(
-                            text = "Estamos presentes en:",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 12.dp),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(6.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            listOf(
-                                "Santiago",
-                                "Puerto Montt",
-                                "Villarica",
-                                "Nacimiento",
-                                "Viña del Mar",
-                                "Valparaíso",
-                                "Concepción"
-                            ).forEach { ciudad ->
-                                Text(
-                                    text = "• $ciudad",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Black
-                                )
-                            }
-                        }
-                    }
-                }
-                Button(
-                    onClick = {
-                        navController.navigate("catalogo")
-                    },
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF81154C)
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 8.dp,
-                        pressedElevation = 4.dp
-                    )
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(32.dp)
                 ) {
-                    Text(
-                        text = "Ver Productos",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            text = "# Nuestra Misión",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = Color(0xFF81154C),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "HuertoHogar. Nuestra misión es proporcionar productos frescos y de calidad directamente desde el campo hasta la puerta de nuestros clientes, garantizando la frescura y el sabor en cada entrega. Nos comprometemos a fomentar una conexión más cercana entre los consumidores y los agricultores locales, apoyando prácticas agrícolas sostenibles y promoviendo una alimentación saludable en todos los hogares chilenos.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Black,
+                            lineHeight = 24.sp
+                        )
+                    }
+                    Divider(
+                        color = Color.LightGray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            text = "# Nuestra Visión",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = Color(0xFF81154C),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "HuertoHogar. Nuestra visión es ser la tienda online líder en la distribución de productos frescos y naturales en Chile, reconocida por nuestra calidad excepcional, servicio al cliente y compromiso con la sostenibilidad. Aspiramos a expandir nuestra presencia a nivel nacional e internacional, estableciendo un nuevo estándar en la distribución de productos agrícolas directos del productor al consumidor.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Black,
+                            lineHeight = 24.sp
+                        )
+                    }
                 }
             }
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
