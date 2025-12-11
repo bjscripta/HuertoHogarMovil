@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -137,6 +138,7 @@ fun ProductoCard(
                 modifier = Modifier
                     .size(48.dp)
                     .background(Color(0xFF81154C), RoundedCornerShape(8.dp))
+                    .testTag("boton_carrito_${producto.id}")
             ) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,

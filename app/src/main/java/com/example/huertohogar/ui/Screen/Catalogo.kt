@@ -20,6 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.huertohogar.R
@@ -150,6 +152,7 @@ fun Catalogo(navController: NavController) {
                 }
             },
             modifier = Modifier
+                .testTag("boton_home_flotante")
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
             containerColor = Color(0xFF81154C),
