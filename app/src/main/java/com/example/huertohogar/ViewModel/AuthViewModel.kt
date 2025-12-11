@@ -1,12 +1,13 @@
+// ViewModel/AuthViewModel.kt
 package com.example.huertohogar.ViewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-// Modelo para el usuario autenticado
 data class UsuarioAuth(
     val correo: String = "",
     val nombre: String = "",
@@ -14,35 +15,33 @@ data class UsuarioAuth(
 )
 
 class AuthViewModel : ViewModel() {
-    // Estado del usuario autenticado
+
+    // Estado persistente del usuario
     private val _usuarioActual = MutableStateFlow(UsuarioAuth())
-    val usuarioActual: StateFlow<UsuarioAuth> = _usuarioActual
+    val usuarioActual: StateFlow<UsuarioAuth> = _usuarioActual.asStateFlow()
 
-    // Estado para el menú desplegable
+    // Estado del menú
     private val _mostrarMenuUsuario = MutableStateFlow(false)
-    val mostrarMenuUsuario: StateFlow<Boolean> = _mostrarMenuUsuario
+    val mostrarMenuUsuario: StateFlow<Boolean> = _mostrarMenuUsuario.asStateFlow()
 
-    // Función para iniciar sesión
+    // Iniciar sesión - GUARDAR en ViewModel
     fun iniciarSesion(correo: String) {
         viewModelScope.launch {
-            // Extraer nombre del correo (antes del @)
-            val nombre = correo.substringBefore("@")
+            val nombre = correo.substringBefore("@").replace(".", " ").capitalize()
             _usuarioActual.value = UsuarioAuth(
                 correo = correo,
                 nombre = nombre,
                 estaAutenticado = true
             )
+            println("DEBUG: Usuario autenticado: $correo")
         }
     }
-
-    // Función para cerrar sesión
     fun cerrarSesion() {
         viewModelScope.launch {
             _usuarioActual.value = UsuarioAuth()
+            println("DEBUG: Usuario cerró sesión")
         }
     }
-
-    // Función para mostrar/ocultar menú de usuario
     fun toggleMenuUsuario() {
         viewModelScope.launch {
             _mostrarMenuUsuario.value = !_mostrarMenuUsuario.value

@@ -1,9 +1,7 @@
 package com.example.huertohogar.ui.Screen
 
-import androidx.compose.runtime.Composable
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -67,14 +65,25 @@ fun Login(navController: NavController) {
         Button(
             onClick = {
                 if (user.isNotBlank() && pass.isNotBlank()) {
-                    // Guardar la sesión
-                    authViewModel.iniciarSesion(user)
-                    Toast.makeText(context, "Bienvenido $user", Toast.LENGTH_SHORT).show()
+                    if (user == "admin@duoc.cl" && pass == "123456") {
+                        authViewModel.iniciarSesion(user)
 
-                    // Navegar al home y limpiar el stack
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
+                        Toast.makeText(context, "Bienvenido Admin", Toast.LENGTH_SHORT).show()
+                        navController.navigate("admin") {
+                            popUpTo("login") { inclusive = true }
+                        }
                     }
+                    else if (user.endsWith("@duoc.cl") || user.endsWith("@profesor.duoc.cl")) {
+                        authViewModel.iniciarSesion(user)
+                        Toast.makeText(context, "Bienvenido $user", Toast.LENGTH_SHORT).show()
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                    else {
+                        Toast.makeText(context, "Solo correos @duoc.cl o @profesor.duoc.cl", Toast.LENGTH_SHORT).show()
+                    }
+
                 } else {
                     Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
                 }

@@ -44,6 +44,8 @@ fun Registro(navController: NavController) {
             value = correo,
             onValueChange = { correo = it },
             label = { Text("Correo", color = Color(0x88B97C31)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -75,27 +77,17 @@ fun Registro(navController: NavController) {
 
         Button(
             onClick = {
-                // Validaciones
                 if (!correo.endsWith("@duoc.cl") && !correo.endsWith("@profesor.duoc.cl")) {
                     Toast.makeText(context, "Error, Solo se permiten correos con dominio @duoc.cl o @profesor.duoc.cl", Toast.LENGTH_SHORT).show()
                 } else if (pass != confirmPass) {
                     Toast.makeText(context, "Error, las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
                 } else if (correo.isNotBlank() && pass.isNotBlank()) {
-                    // Guardar en la BD (si tienes Room configurado)
-                    println("DEBUG: Usuario registrado - $correo")
-
-                    // Iniciar sesión automáticamente después del registro
                     authViewModel.iniciarSesion(correo)
-                    Toast.makeText(context, "Usuario $correo registrado e iniciado sesión", Toast.LENGTH_SHORT).show()
 
-                    // Navegación al home
+                    Toast.makeText(context, "¡Registro exitoso! Bienvenido", Toast.LENGTH_SHORT).show()
                     navController.navigate("home") {
                         popUpTo("registro") { inclusive = true }
                     }
-
-                    correo = ""
-                    pass = ""
-                    confirmPass = ""
                 }
             },
             modifier = Modifier.fillMaxWidth(),

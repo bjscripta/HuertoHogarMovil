@@ -58,7 +58,6 @@ fun Home(navController: NavController) {
                     )
 
                     if (usuarioActual.estaAutenticado) {
-                        // MOSTRAR USUARIO AUTENTICADO (icono + nombre + menú)
                         Box {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -66,7 +65,6 @@ fun Home(navController: NavController) {
                                     .clickable { authViewModel.toggleMenuUsuario() }
                                     .padding(8.dp)
                             ) {
-                                // Icono de usuario
                                 Box(
                                     modifier = Modifier
                                         .size(36.dp)
@@ -84,8 +82,6 @@ fun Home(navController: NavController) {
                                 }
 
                                 Spacer(modifier = Modifier.width(8.dp))
-
-                                // Nombre del usuario
                                 Text(
                                     text = usuarioActual.nombre,
                                     color = Color.Black,
@@ -94,16 +90,12 @@ fun Home(navController: NavController) {
                                 )
 
                                 Spacer(modifier = Modifier.width(4.dp))
-
-                                // Flecha del menú desplegable
                                 Icon(
                                     imageVector = Icons.Default.ArrowDropDown,
                                     contentDescription = "Menú usuario",
                                     tint = Color.Black
                                 )
                             }
-
-                            // MENÚ DESPLEGABLE
                             if (mostrarMenu) {
                                 DropdownMenu(
                                     expanded = mostrarMenu,
